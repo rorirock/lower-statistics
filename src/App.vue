@@ -14,8 +14,11 @@ export default {
 </script>
 
 <style>
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Gibson","gibsonregular";
+  src:'./assets/font/GibsonBoldIt.woff';
+  src:'./assets/font/GibsonRegular.woff';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
