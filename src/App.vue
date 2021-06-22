@@ -1,5 +1,5 @@
 <template>
-  <Lower/>
+<Lower/>
 </template>
 
 <script>
@@ -14,15 +14,17 @@ export default {
 </script>
 
 <style>
+@font-face {
+    font-family: "Gibson";
+    src:url('https://lvp-fonts.s3-eu-west-1.amazonaws.com/Gibson/GibsonRegular.woff') format("woff");
+    src:url('https://lvp-fonts.s3-eu-west-1.amazonaws.com/Gibson/GibsonBoldIt.woff') format("woff");
+   }
 
 #app {
-  font-family: "Gibson","gibsonregular";
-  src:'./assets/font/GibsonBoldIt.woff';
-  src:'./assets/font/GibsonRegular.woff';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Gibson";
   text-align: center;
-  color: #2c3e50;
+  color: #ffffff;
   margin-top: 60px;
 }
+
 </style>

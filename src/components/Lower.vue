@@ -1,41 +1,41 @@
 <template>
     <div class="container">
         <div class="streaming">
-            <div class="wrap-data-player">
-                <div class="banner">
-                        <div class="logo-name">
-                            <img :src="logoTeam" class="logo-team">
-                            <p class="nickname">{{nickName}}</p>
-                        </div>
-                        <div>
-                        <img :src="logoPlayer" class="player-avatar" alt="">
-                        </div>
-                        <div class="info-player">
-                            <p>CAMPEÓN MÁS USADO</p>
-                        </div>
+                 <div class="content-player" id="player-content">
+                    <img :src="logoPlayer" class="player-avatar" alt="">
                 </div>
-                <div class="grid">
-                    <div class="col-data-player">
-                        <div v-for="(data, index) in metrics" :key="index" class="col-progress-data">
-                             <div class="col-name-metric">
-                                <label for="file">{{labels[index]}}</label>
-                             </div>
-                             <div class="col-progress">
-                                <div style="back">
-                                 <progress id="file" :max="(data > 100) ? 500:50" :value="data"></progress>
+                <div class="wrap-data-player" id="wrap">
+                    <div class="banner">
+                            <div class="logo-name">
+                                <img :src="logoTeam" class="logo-team">
+                                <p class="nickname">{{nickName}}</p>
+                            </div>
+                            <div class="info-player">
+                                <p>CAMPEÓN MÁS USADO</p>
+                            </div>
+                    </div>
+                    <div class="grid">
+                        <div class="col-data-player">
+                            <div v-for="(data, index) in metrics" :key="index" class="col-progress-data">
+                                <div class="col-name-metric">
+                                    <label for="file">{{labels[index]}}</label>
                                 </div>
-                             </div>
-                             <div class="col-number-metric">
-                                 <label for="file">{{data}}</label>
-                             </div>
+                                <div class="col-progress">
+                                    <div style="back">
+                                        <progress id="file" :max="laderMetrics[index]" :value="data"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-number-metric">
+                                    <label for="file">{{data}}</label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="col-avatar-player">
-                        <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg" class="champion" alt="">
-                    </div>
+                        
+                        <div class="col-avatar-player">
+                            <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg" class="champion" alt="">
+                        </div>
+                    </div> 
                 </div>
-            </div>
         </div>
     </div>
 </template>
@@ -51,34 +51,97 @@ export default {
     return {
         labels:['KDA','CS/MIN','GOLD/MIN','DMG/MIN'],
         metrics: [],
+        laderMetrics:[],
         nickName:null,
         url:null,
+        urlLader:null,
         logoTeam:null,
         logoPlayer:null
     }
   },
   mounted () {
-      this.url = process.env.VUE_APP_RUTE_API.replace(':competitionId',process.env.VUE_APP_COMPETITIONID).replace(':playerId',process.env.VUE_APP_PLAYERID);
-      this.axios.get(this.url)
+    this.urlLader = process.env.VUE_APP_LADDER.replace(':competitionId',process.env.VUE_APP_COMPETITIONID);
+    this.url = process.env.VUE_APP_RUTE_API.replace(':competitionId',process.env.VUE_APP_COMPETITIONID).replace(':playerId',process.env.VUE_APP_PLAYERID);
+    
+    this.axios.get(this.urlLader)
+        .then((resp)=>{
+            let { kda,damagePerMinute,creepsPerMinute,goldPerMinute } = resp.data.data;
+            this.laderMetrics.push(kda,creepsPerMinute,goldPerMinute,damagePerMinute);
+    })
+    .catch(error => console.log(error))
+
+    this.axios.get(this.url)
         .then((response)=>{
-            console.log("data",response.data.data);
             let { kda,damagePerMinute,creepsPerMinute,goldPerMinute } = response.data.data.metrics;
             let { nickname, avatar } = response.data.data.player;
             let { original } = response.data.data.team.logo;
             this.metrics.push(kda,creepsPerMinute,goldPerMinute,damagePerMinute);
-            this.nickName = nickname;
+            this.nickName = nickname.toUpperCase();
             this.logoTeam = original;
             this.logoPlayer= avatar.original;
+    })
+    .catch(error => console.log(error))
 
-            console.log(this.logoTeam);
-            console.log(this.logoPlayer);
-        })
-        .catch(error => console.log(error))
-  }
+    setTimeout(function(){ 
+       let wraphtml = document.getElementById('wrap');
+       let player = document.getElementById('player-content');
+        player.animate([
+            {  bottom:'-30%',transform: 'translate(0,0)' },            
+            {  bottom:'-60%',transform: 'translate(0,0)' }       
+        ],{
+            duration: 3000
+        }
+        )
+        wraphtml.animate([
+            {  bottom:'-4%',transform: 'translate(0,0)' },            
+            { bottom:'-30%',transform: 'translate(0,0)' }       
+        ],{
+            duration: 3000
+        }
+        )
+        player.style.bottom = '-60%'
+        wraphtml.style.bottom = '-30%'
+       
+    }, 
+    13000);
+  },
 }
 </script>
 
 <style scoped>
+@keyframes hidden-slide {
+        from{
+            bottom:-4%;
+            transform: translate(0,0);
+        }             
+        to{
+            bottom:-30%;
+            transform: translate(0,0);
+        }     
+}
+
+@keyframes slide {
+        from{
+            bottom:-30%;
+            transform: translate(0,0);
+        }             
+        to{
+            bottom:-4%;
+            transform: translate(0,0);
+        }        
+}
+
+@keyframes slide-player {
+        from{
+            bottom: -60%;
+        }             
+        to{
+           height: 60%;
+           width: 90%;
+           bottom: -30%;
+        }        
+}
+
 
 .container {
     height: 100%;
@@ -98,29 +161,42 @@ export default {
     width: 100%;
 }
 
+/* .container .streaming .wrap-data-player{
+    animation: hidden-slide 3s ease 13s;
+} */
+
 .container .streaming .wrap-data-player {
     cursor: pointer;
     position: absolute;
-    height: 135px;
-    width: 700px;
-    bottom: -105px;
-    left: 50%;
+    height: 32.5%;
+    width: 68.6%;
+    left: 16%;
+    bottom:-4%;
     background: url('../assets/lower-background.png') center no-repeat;
     background-size: contain;
-    transform: translateX(-50%);
-    transition: .3s ease-in-out;
-}
-
-.container .streaming .wrap-data-player:hover {
-    bottom: 0;
+    animation: slide 3s;
 }
 
 .container .streaming .wrap-data-player .grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: 1px 300px;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 0px 300px;
+}
+.content-player{
+    cursor: pointer;
+    position: absolute;
+    height: 60%;
+    width: 90%;
+    bottom: -30%;
+    z-index: 1;
+    animation:slide-player 3s;
 }
 
+/* 
+.content-player{
+    animation: hidden-player 3s;
+    animation-delay: 10s;
+} */
 .header-info-player {
     grid-row: 1 / 3;
     grid-column: 1 / 4;
@@ -130,36 +206,31 @@ export default {
 .banner{
     display: flex;
     justify-content: space-between;
-    color: red;
     margin-left:auto;
+    margin-top: 3%;
 }
 .logo-name{
     text-align: center;
     display: flex;
-    justify-content: center;
     align-items: center;
-    margin-left: 80px;
+    margin-left: 9%;
 }
 .nickname{
     float: right;
-    color: white;
+    font-size: 20px;
 }
 
-.info-player p{
-    margin-top: 5%;
-    font-size: 12px;
-    color: white;
-}
 
 .header-info-player .name-player,
 .header-info-player .info-player {
     color: white;
     width: 50%;
     padding: 8px 15px;
-    font-weight: bold;
 }
 
 .info-player{
+    display: flex;
+    align-items: center;
     margin-right: 2%;
 }
 
@@ -178,53 +249,46 @@ export default {
 }
 .col-progress-data{
     display: grid;
-    margin-top: 5px;
+    grid-template-columns: repeat(1, 1fr 3fr 1fr);
+    margin-top:  2.7%;
 }
 .col-name-metric{
     grid-row: 1 / 1;
     grid-column: 1 / 1;
-    width: 90px;
+    width: 85%;
     text-align: right;
-    font-size: 12px;
-    color: #FFFFFF;
+    font-size: 15px;
 }
 .col-progress{
-    grid-row: 1 / 1;
-    grid-column: 2 / 2;
     text-align: left;
-    
 }
 
-progress::-webkit-progress-bar {background-color: #5801F0; width: 100%;}
-progress {background-color: #5801F0;}
+progress::-webkit-progress-bar {background-color: #3f3f9f; width: 100%;}
+progress {background-color: #3f3f9f;}
 
 /* value: */
 progress::-webkit-progress-value {background-color: #4AB800 !important;}
 progress::-moz-progress-bar {background-color: #4AB800 !important;}
 progress {
     color: #4AB800;
+    width: 95%;
     height: 10px;
     margin-bottom: 5px;
 }
 
 .col-number-metric{
-    grid-row: 3 / 1;
-    grid-column: 3 / 3;
     text-align: left;
-    font-size: 12px;
-    width: 25px;
-    color: #FFFFFF;
+    font-size: 20px;
 }
 
 .logo-team{
-    margin-right: 25%;
+    margin-right: 2%;
     height: auto;
-    width: 28px;
+    width: 6%;
 }
  .col-image-player {
     grid-row: 1 / 3;
     grid-column: 2 / 3;
-    z-index: 1;
     height: auto;
     max-width: 170px;
 }
@@ -238,23 +302,22 @@ progress {
     position: relative;
 }
 
-.col-avatar-player img{
-    height: 105px;;
-    max-width: 170px;
-}
 .player-avatar{
     position: absolute;
     z-index: 1;
-    width: 125px;
+    width: 300px;
     margin-left: 12%;
 }
 
 .champion{
-    position:fixed;
+    width: 90%;
+    margin-left: 10%;
+    margin-top: 1%;
 }
 
 p {
     margin: 0;
 }
+
 
 </style>
