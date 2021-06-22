@@ -109,16 +109,7 @@ export default {
 </script>
 
 <style scoped>
-@keyframes hidden-slide {
-        from{
-            bottom:-4%;
-            transform: translate(0,0);
-        }             
-        to{
-            bottom:-30%;
-            transform: translate(0,0);
-        }     
-}
+
 
 @keyframes slide {
         from{
@@ -161,10 +152,6 @@ export default {
     width: 100%;
 }
 
-/* .container .streaming .wrap-data-player{
-    animation: hidden-slide 3s ease 13s;
-} */
-
 .container .streaming .wrap-data-player {
     cursor: pointer;
     position: absolute;
@@ -192,11 +179,6 @@ export default {
     animation:slide-player 3s;
 }
 
-/* 
-.content-player{
-    animation: hidden-player 3s;
-    animation-delay: 10s;
-} */
 .header-info-player {
     grid-row: 1 / 3;
     grid-column: 1 / 4;
